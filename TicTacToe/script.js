@@ -51,6 +51,18 @@ window.addEventListener('DOMContentLoaded', () => {
     let turn = "X"
     let isgameover = false
     let isMusicPlaying = false
+    let gameMode = "pvp"; // "pvp" or "pve"
+
+    const wins = [
+        [0, 1, 2, 5, 16.67, 0, 90],
+        [3, 4, 5, 5, 50.00, 0, 90],
+        [6, 7, 8, 5, 83.33, 0, 90],
+        [0, 3, 6, 16.67, 5, 90, 90],
+        [1, 4, 7, 50.00, 5, 90, 90],
+        [2, 5, 8, 83.33, 5, 90, 90],
+        [0, 4, 8, 10, 10, 45, 113],
+        [2, 4, 6, 10, 90, -45, 113],
+    ]
 
     // Music toggle logic
     const musicToggleBtn = document.getElementById("music-toggle");
@@ -94,21 +106,12 @@ window.addEventListener('DOMContentLoaded', () => {
     // Function to check for a win
     const checkWin = ()=>{
         let boxtexts = document.getElementsByClassName('boxtext');
-        let wins = [
-            [0, 1, 2, 5, 16.67, 0, 90],
-            [3, 4, 5, 5, 50.00, 0, 90],
-            [6, 7, 8, 5, 83.33, 0, 90],
-            [0, 3, 6, 16.67, 5, 90, 90],
-            [1, 4, 7, 50.00, 5, 90, 90],
-            [2, 5, 8, 83.33, 5, 90, 90],
-            [0, 4, 8, 10, 10, 45, 113],
-            [2, 4, 6, 10, 90, -45, 113],
-        ]
         let winDetected = false;
         
         wins.forEach(e =>{
             if((boxtexts[e[0]].innerText.trim() === boxtexts[e[1]].innerText.trim()) && (boxtexts[e[2]].innerText.trim() === boxtexts[e[1]].innerText.trim()) && (boxtexts[e[0]].innerText.trim() !== "") ){
-                document.querySelector('.info').innerText = boxtexts[e[0]].innerText + " Won!"
+                const winnerSymbol = boxtexts[e[0]].innerText.trim();
+                document.querySelector('.info').innerText = winnerSymbol + " Won!"
                 isgameover = true
                 winDetected = true
                 
@@ -152,12 +155,91 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Get optimal AI Move for Computer (O)
+    const getBestMove = () => {
+        let boxtexts = document.getElementsByClassName('boxtext');
+        
+        // 1. Can Computer Win in next move?
+        for (let i = 0; i < wins.length; i++) {
+            const [a, b, c] = wins[i];
+            const valA = boxtexts[a].innerText.trim();
+            const valB = boxtexts[b].innerText.trim();
+            const valC = boxtexts[c].innerText.trim();
+            
+            if (valA === "O" && valB === "O" && valC === "") return c;
+            if (valA === "O" && valC === "O" && valB === "") return b;
+            if (valB === "O" && valC === "O" && valA === "") return a;
+        }
+        
+        // 2. Can Player Win in next move (Block)?
+        for (let i = 0; i < wins.length; i++) {
+            const [a, b, c] = wins[i];
+            const valA = boxtexts[a].innerText.trim();
+            const valB = boxtexts[b].innerText.trim();
+            const valC = boxtexts[c].innerText.trim();
+            
+            if (valA === "X" && valB === "X" && valC === "") return c;
+            if (valA === "X" && valC === "X" && valB === "") return b;
+            if (valB === "X" && valC === "X" && valA === "") return a;
+        }
+        
+        // 3. Take Center if free (index 4)
+        if (boxtexts[4].innerText.trim() === "") return 4;
+        
+        // 4. Take Corner if free (indices 0, 2, 6, 8)
+        const corners = [0, 2, 6, 8];
+        const freeCorners = corners.filter(idx => boxtexts[idx].innerText.trim() === "");
+        if (freeCorners.length > 0) {
+            const randIdx = Math.floor(Math.random() * freeCorners.length);
+            return freeCorners[randIdx];
+        }
+        
+        // 5. Take any remaining cell
+        const remaining = [];
+        for (let i = 0; i < 9; i++) {
+            if (boxtexts[i].innerText.trim() === "") {
+                remaining.push(i);
+            }
+        }
+        if (remaining.length > 0) {
+            const randIdx = Math.floor(Math.random() * remaining.length);
+            return remaining[randIdx];
+        }
+        
+        return null;
+    };
+
+    // Auto Play Move for Computer AI
+    const computerMove = () => {
+        if (isgameover || turn !== "O") return;
+        
+        const bestIdx = getBestMove();
+        if (bestIdx !== null) {
+            let boxes = document.getElementsByClassName("box");
+            let boxtext = boxes[bestIdx].querySelector('.boxtext');
+            
+            boxtext.innerText = "O";
+            boxtext.classList.add("boxtext-o");
+            
+            turn = changeTurn();
+            if (audioTurn) {
+                audioTurn.play().catch(err => console.log("Audio play failed:", err));
+            }
+            checkWin();
+            
+            if (!isgameover){
+                document.getElementsByClassName("info")[0].innerText  = "Turn for " + turn;
+            }
+        }
+    };
+
     // Game Logic
     let boxes = document.getElementsByClassName("box");
     Array.from(boxes).forEach(element =>{
         let boxtext = element.querySelector('.boxtext');
         element.addEventListener('click', ()=>{
-            if(boxtext.innerText.trim() === '' && !isgameover){
+            const isComputerTurn = (gameMode === "pve" && turn === "O");
+            if(boxtext.innerText.trim() === '' && !isgameover && !isComputerTurn){
                 boxtext.innerText = turn;
                 // Add styling class depending on who clicked
                 if (turn === "X") {
@@ -174,26 +256,58 @@ window.addEventListener('DOMContentLoaded', () => {
                 
                 if (!isgameover){
                     document.getElementsByClassName("info")[0].innerText  = "Turn for " + turn;
+                    
+                    // Trigger computer move if in PvE mode
+                    if (gameMode === "pve" && turn === "O") {
+                        setTimeout(computerMove, 500);
+                    }
                 } 
             }
         })
     })
 
+    // Reset Game Helper
+    const resetGame = () => {
+        let boxtexts = document.querySelectorAll('.boxtext');
+        Array.from(boxtexts).forEach(element => {
+            element.innerText = ""
+            element.classList.remove("boxtext-x", "boxtext-o");
+            element.parentElement.classList.remove("winner-cell");
+        });
+        turn = "X"; 
+        isgameover = false
+        document.querySelector(".line").style.width = "0%";
+        document.getElementsByClassName("info")[0].innerText  = "Turn for " + turn;
+        document.querySelector('.imgbox').classList.remove('active');
+    };
+
     // Add onclick listener to reset button
     const resetBtn = document.getElementById("reset");
     if (resetBtn) {
-        resetBtn.addEventListener('click', ()=>{
-            let boxtexts = document.querySelectorAll('.boxtext');
-            Array.from(boxtexts).forEach(element => {
-                element.innerText = ""
-                element.classList.remove("boxtext-x", "boxtext-o");
-                element.parentElement.classList.remove("winner-cell");
-            });
-            turn = "X"; 
-            isgameover = false
-            document.querySelector(".line").style.width = "0%";
-            document.getElementsByClassName("info")[0].innerText  = "Turn for " + turn;
-            document.querySelector('.imgbox').classList.remove('active');
+        resetBtn.addEventListener('click', resetGame);
+    }
+
+    // Mode Buttons Listeners
+    const pvpBtn = document.getElementById("pvp-btn");
+    const pveBtn = document.getElementById("pve-btn");
+    
+    if (pvpBtn && pveBtn) {
+        pvpBtn.addEventListener("click", () => {
+            if (gameMode !== "pvp") {
+                gameMode = "pvp";
+                pvpBtn.classList.add("active");
+                pveBtn.classList.remove("active");
+                resetGame();
+            }
+        });
+        
+        pveBtn.addEventListener("click", () => {
+            if (gameMode !== "pve") {
+                gameMode = "pve";
+                pveBtn.classList.add("active");
+                pvpBtn.classList.remove("active");
+                resetGame();
+            }
         });
     }
 });
