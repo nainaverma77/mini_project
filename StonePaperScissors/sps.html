@@ -3,38 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROCK PAPER SCISSORS GAME</title>
+    <title>Rock Paper Scissors Game</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="sps.css">
 </head>
 <body>
-    <h1>ROCK PAPER SCISSORS </h1>
-    <div class="choices" id="rock">
-        <div class="choice">
-            <img src="rock.png">
-
+    <div class="game-container">
+        <div class="header-nav">
+            <a href="../index.html" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Dashboard
+            </a>
+            <h1>Rock Paper Scissors</h1>
         </div>
-         <div class="choice" id="paper">
-            <img src="paper.png">
 
+        <p class="subtitle">Play against the machine. First to 10 wins?</p>
+
+        <div class="choices">
+            <div class="choice" id="rock" title="Choose Rock">
+                <div class="img-wrapper">
+                    <img src="rock.png" alt="Rock">
+                </div>
+                <span>Rock</span>
+            </div>
+            <div class="choice" id="paper" title="Choose Paper">
+                <div class="img-wrapper">
+                    <img src="paper.png" alt="Paper">
+                </div>
+                <span>Paper</span>
+            </div>
+            <div class="choice" id="scissors" title="Choose Scissors">
+                <div class="img-wrapper">
+                    <img src="scissors.jpg" alt="Scissors">
+                </div>
+                <span>Scissors</span>
+            </div>
         </div>
-         <div class="choice" id="scissors">
-            <img src="scissors.jpg">
 
+        <div class="score-board">
+            <div class="score user-card">
+                <p id="user-score">0</p>
+                <span>You</span>
+            </div>
+            <div class="versus">VS</div>
+            <div class="score comp-card">
+                <p id="comp-score">0</p>
+                <span>Comp</span>
+            </div>
+        </div>
+
+        <div class="msg-container">
+            <p id="msg">Make your move to start the game!</p>
+        </div>
+
+        <div class="control-panel">
+            <button id="reset-btn" class="btn reset-btn">
+                <i class="fa-solid fa-rotate-right"></i> Reset Score
+            </button>
         </div>
     </div>
-    <div class="score-board">
-        <div class="score">
-            <p id="user-score">0</p>
-            <p>You</p>
-        </div>
-        <div class="score">
-            <p id="comp-score">0</p>
-            <p>Comp</p>
-        </div>
-    </div>
-    <div class="msg-container">
-        <p id="msg">play you move</p>
-    </div>
+
     <script src="sps.js"></script>
 </body>
 </html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Projects Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-hover-border: rgba(99, 102, 241, 0.4);
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-color: #6366f1;
+            --accent-glow: 0 0 20px rgba(99, 102, 241, 0.5);
+            --font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(236, 72, 153, 0.08) 0px, transparent 50%);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 3rem 2rem 1rem 2rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            border-radius: 2px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0.5rem auto 0 auto;
+            line-height: 1.6;
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255, 255, 255, 0.04), transparent 40%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--card-hover-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px var(--primary-glow);
+        }
+
+        .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-sps .icon-wrapper {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .card-sps:hover .icon-wrapper {
+            background: #f59e0b;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .card-ttt .icon-wrapper {
+            background: rgba(236, 72, 153, 0.1);
+            color: #ec4899;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+
+        .card-ttt:hover .icon-wrapper {
+            background: #ec4899;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .card-amazon .icon-wrapper {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .card-amazon:hover .icon-wrapper {
+            background: #10b981;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .project-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .project-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        .action-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: gap 0.2s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-sps .action-link { color: #f59e0b; }
+        .card-ttt .action-link { color: #ec4899; }
+        .card-amazon .action-link { color: #10b981; }
+
+        .project-card:hover .action-link {
+            gap: 0.85rem;
+        }
+
+        footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Grid */
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            header p {
+                font-size: 1rem;
+            }
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .project-card {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Interactive Web Showcase</h1>
+        <p>A collection of mini web applications updated with responsive layouts, modern aesthetics, and interactive features.</p>
+    </header>
+
+    <main>
+        <div class="dashboard">
+            <!-- Rock Paper Scissors Card -->
+            <a href="StonePaperScissors/sps.html" class="project-card card-sps">
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-hand-fist"></i>
+                </div>
+                <h2>Rock Paper Scissors</h2>
+                <div class="tags">
+                    <span class="tag">Classic Game</span>
+                    <span class="tag">VS Computer</span>
+                    <span class="tag">Score Counter</span>
+                    <span class="tag">Glassmorphism</span>
+                </div>
+                <p>Play against the computer. Featuring smooth animations, score tracking, selection glow states, and responsive mechanics.</p>
+                <div class="action-link">
+                    Play Game <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- Tic Tac Toe Card -->
+            <a href="TicTacToe/game.html" class="project-card card-ttt">
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <h2>Tic Tac Toe</h2>
+                <div class="tags">
+                    <span class="tag">2-Player Game</span>
+                    <span class="tag">Neon Theme</span>
+                    <span class="tag">SFX & Music</span>
+                    <span class="tag">Responsive Grid</span>
+                </div>
+                <p>Enjoy a classic game of Tic Tac Toe. Includes reactive sound effects, background music toggle, draw detection, and win highlight animations.</p>
+                <div class="action-link">
+                    Play Game <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- Amazon Clone Card -->
+            <a href="amazon/index.html" class="project-card card-amazon">
+                <div class="icon-wrapper">
+                    <i class="fa-brands fa-amazon"></i>
+                </div>
+                <h2>Amazon UI Clone</h2>
+                <div class="tags">
+                    <span class="tag">E-Commerce Clone</span>
+                    <span class="tag">CSS Grid/Flex</span>
+                    <span class="tag">Banner Carousel</span>
+                    <span class="tag">Search Filter</span>
+                </div>
+                <p>A responsive landing page clone of Amazon. Features shopping cart counter updates, product card grid, and a live search filter.</p>
+                <div class="action-link">
+                    View Project <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <p>Created by <a href="https://github.com/nainaverma77" target="_blank">Naina Verma</a>. Live Showcase | Built with pure HTML, CSS, and JavaScript.</p>
+    </footer>
+
+    <script>
+        // Interactive card light effect on hover
+        const cards = document.querySelectorAll('.project-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,118 +1,329 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+Bhaina+2&family=Roboto&display=swap');
-*{
+:root {
+    --bg-dark: #0f071a;
+    --card-bg: rgba(30, 15, 45, 0.4);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-white: #f8fafc;
+    --text-slate: #a78bfa;
+    --accent-purple: #8b5cf6;
+    --accent-pink: #ec4899;
+    --accent-cyan: #06b6d4;
+    --font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-family);
 }
 
-nav{
-    background-color: rgb(37, 9, 37);
-    color: white;
-    height: 65px;
-    font-size: 27px;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    font-family: 'Roboto', sans-serif;
-}
-
-nav ul{
-    list-style-type: none;
-}
-
-.gameContainer{ 
+body {
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(at 10% 20%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(236, 72, 153, 0.1) 0px, transparent 50%);
+    color: var(--text-white);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    margin-top: 50px;
+    align-items: center;
+    padding: 1.5rem;
 }
 
-.container{
-    display: grid;
-    grid-template-rows: repeat(3, 10vw);
-    grid-template-columns: repeat(3, 10vw);
-    font-family: 'Roboto', sans-serif;
+.game-wrapper {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Header Navigation */
+.header-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.back-btn {
+    text-decoration: none;
+    color: var(--text-slate);
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+    color: var(--text-white);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(-3px);
+}
+
+.audio-controls {
+    display: flex;
+    align-items: center;
+}
+
+.audio-btn {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    color: var(--text-slate);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease;
     position: relative;
 }
 
-.box{
-    border: 2px solid black;
-    font-size: 8vw;
+.audio-btn:hover {
+    color: var(--text-white);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--text-slate);
+}
+
+.vol-state {
+    font-size: 0.6rem;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: var(--bg-dark);
+    padding: 2px;
+    border-radius: 50%;
+}
+
+/* Game Layout */
+.gameContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    width: 100%;
+}
+
+/* Board card */
+.board-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+.container {
+    display: grid;
+    grid-template-rows: repeat(3, min(14vw, 120px));
+    grid-template-columns: repeat(3, min(14vw, 120px));
+    position: relative;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.box {
+    border: 1px solid rgba(167, 139, 250, 0.15);
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: all 0.2s ease;
 }
 
-.box:hover{
-    background-color: rgb(242, 234, 250);
+.box:hover {
+    background-color: rgba(167, 139, 250, 0.06);
 }
 
-.info {
-    font-size: 22px;
+.boxtext {
+    font-size: min(8vw, 4.5rem);
+    font-weight: 800;
+    user-select: none;
+    transition: all 0.2s ease;
 }
 
-.gameInfo{
-    padding: 0 34px;
+/* X and O colors */
+.boxtext-x {
+    color: var(--accent-pink);
+    text-shadow: 0 0 15px rgba(236, 72, 153, 0.6);
+}
+
+.boxtext-o {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 15px rgba(6, 182, 212, 0.6);
+}
+
+/* Grid borders removal */
+.br-0 { border-right: 0 !important; }
+.bl-0 { border-left: 0 !important; }
+.bt-0 { border-top: 0 !important; }
+.bb-0 { border-bottom: 0 !important; }
+
+/* Draw winning line */
+.line {
+    background-color: var(--accent-pink);
+    height: 4px;
+    width: 0;
+    position: absolute;
+    z-index: 10;
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--accent-pink);
+    transition: width 0.4s ease-in-out;
+}
+
+/* Winner Cell Highlight */
+@keyframes winningPulse {
+    0% { background-color: rgba(139, 92, 246, 0.1); box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.2); }
+    50% { background-color: rgba(139, 92, 246, 0.3); box-shadow: inset 0 0 25px rgba(139, 92, 246, 0.6); }
+    100% { background-color: rgba(139, 92, 246, 0.1); box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.2); }
+}
+
+.box.winner-cell {
+    animation: winningPulse 1.2s infinite ease-in-out;
+    border-color: var(--accent-purple) !important;
+}
+
+/* Game Info Column */
+.gameInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    flex-grow: 1;
+    max-width: 320px;
+}
+
+.gameInfo h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #ffffff 40%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-family: 'Baloo Bhaina 2', cursive;
 }
 
-.gameInfo h1{
-    font-size: 2.5rem;
+.status-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    padding: 0.8rem 1.5rem;
+    border-radius: 16px;
+    width: 100%;
 }
 
-.imgbox img{
-    width: 0;
-    transition: width 1s ease-in-out;
+.info {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-slate);
 }
 
-.br-0{
-    border-right: 0;
+.button-controls {
+    width: 100%;
 }
 
-.bl-0{
-    border-left: 0;
-}
-
-.bt-0{
-    border-top: 0;
-}
-
-.bb-0{
-    border-bottom: 0;
-}
-
-#reset {
-    margin: 0 23px;
-    padding: 1px 18px;
-    background: #f3e7f9;
-    border-radius: 6px;
+.btn {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 0.85rem 1.5rem;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 700;
     cursor: pointer;
-    font-family: 'Baloo Bhaina 2';
-    font-size: 15px;
-    font-weight: bolder;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    transition: all 0.2s ease;
 }
 
-.line{
-    background-color: black;
-    height: 3px;
-    width: 0;
-    position: absolute;
-    background-color: #911d91;
-    transition: width 1s ease-in-out;
+.reset-btn {
+    background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%);
+    color: var(--text-white);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
-@media screen and (max-width: 950px)
-{
-    .gameContainer{
-        flex-wrap: wrap;
+.reset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.reset-btn:active {
+    transform: translateY(1px);
+}
+
+/* GIF winner image box */
+.imgbox {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.2);
+    transition: all 0.5s ease;
+    height: 0;
+}
+
+.imgbox.active {
+    height: 180px;
+    border: 1px solid var(--border-color);
+}
+
+.imgbox img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+}
+
+/* Responsiveness */
+@media (max-width: 800px) {
+    body {
+        padding: 1rem;
     }
-    .gameInfo{
-        margin-top: 34px;
+
+    .gameContainer {
+        flex-direction: column;
+        gap: 2rem;
     }
-    .gameInfo h1{
-        font-size: 1.5rem;
+
+    .board-card {
+        padding: 1.5rem;
     }
-    .container { 
-        grid-template-rows: repeat(3, 20vw);
-        grid-template-columns: repeat(3, 20vw);
+
+    .container {
+        grid-template-rows: repeat(3, min(24vw, 95px));
+        grid-template-columns: repeat(3, min(24vw, 95px));
+    }
+
+    .gameInfo {
+        align-items: center;
+        max-width: 100%;
+        width: 100%;
+        text-align: center;
+    }
+
+    .status-card {
+        max-width: 350px;
+    }
+
+    .button-controls {
+        max-width: 350px;
+    }
+
+    .imgbox.active {
+        max-width: 350px;
+        height: 150px;
     }
 }
