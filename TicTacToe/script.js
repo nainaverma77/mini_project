@@ -1,13 +1,47 @@
+// Global error listener to help debug on-screen
+window.addEventListener('error', (event) => {
+    const errorDiv = document.createElement('div');
+    errorDiv.style.position = 'fixed';
+    errorDiv.style.top = '10px';
+    errorDiv.style.left = '10px';
+    errorDiv.style.right = '10px';
+    errorDiv.style.backgroundColor = 'rgba(239, 68, 68, 0.95)';
+    errorDiv.style.color = '#ffffff';
+    errorDiv.style.padding = '15px';
+    errorDiv.style.borderRadius = '8px';
+    errorDiv.style.zIndex = '9999';
+    errorDiv.style.fontFamily = 'monospace';
+    errorDiv.style.fontSize = '12px';
+    errorDiv.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
+    errorDiv.innerHTML = `<strong>JS Error:</strong> ${event.message} <br> <em>at ${event.filename}:${event.lineno}</em>`;
+    document.body.appendChild(errorDiv);
+});
+
 console.log("Welcome to Tic Tac Toe")
-let music = new Audio("music.mp3")
-let audioTurn = new Audio("ting.mp3")
-let gameover = new Audio("gameover.mp3")
+
+let music, audioTurn, gameover;
+try {
+    music = new Audio("music.mp3");
+    music.loop = true;
+} catch (e) {
+    console.warn("Audio 'music.mp3' failed to initialize:", e);
+}
+
+try {
+    audioTurn = new Audio("ting.mp3");
+} catch (e) {
+    console.warn("Audio 'ting.mp3' failed to initialize:", e);
+}
+
+try {
+    gameover = new Audio("gameover.mp3");
+} catch (e) {
+    console.warn("Audio 'gameover.mp3' failed to initialize:", e);
+}
+
 let turn = "X"
 let isgameover = false
 let isMusicPlaying = false
-
-// Loop background music
-music.loop = true;
 
 // Music toggle logic
 const musicToggleBtn = document.getElementById("music-toggle");
@@ -15,20 +49,30 @@ if (musicToggleBtn) {
     musicToggleBtn.addEventListener("click", () => {
         const icon = musicToggleBtn.querySelector(".vol-state");
         if (isMusicPlaying) {
-            music.pause();
+            if (music) {
+                try {
+                    music.pause();
+                } catch (e) {
+                    console.error("music.pause() failed:", e);
+                }
+            }
             isMusicPlaying = false;
             icon.className = "fa-solid fa-volume-xmark vol-state";
             musicToggleBtn.style.color = "var(--text-slate)";
             musicToggleBtn.style.borderColor = "var(--border-color)";
         } else {
-            music.play().then(() => {
-                isMusicPlaying = true;
-                icon.className = "fa-solid fa-volume-high vol-state";
-                musicToggleBtn.style.color = "var(--accent-cyan)";
-                musicToggleBtn.style.borderColor = "var(--accent-cyan)";
-            }).catch(err => {
-                console.log("Audio play failed: ", err);
-            });
+            if (music) {
+                music.play().then(() => {
+                    isMusicPlaying = true;
+                    icon.className = "fa-solid fa-volume-high vol-state";
+                    musicToggleBtn.style.color = "var(--accent-cyan)";
+                    musicToggleBtn.style.borderColor = "var(--accent-cyan)";
+                }).catch(err => {
+                    console.log("Audio play failed: ", err);
+                });
+            } else {
+                console.log("Music object not available.");
+            }
         }
     });
 }
@@ -42,14 +86,14 @@ const changeTurn = ()=>{
 const checkWin = ()=>{
     let boxtexts = document.getElementsByClassName('boxtext');
     let wins = [
-        [0, 1, 2, 2.5, 5, 0],
-        [3, 4, 5, 2.5, 15, 0],
-        [6, 7, 8, 2.5, 25, 0],
-        [0, 3, 6, -7.5, 15, 90],
-        [1, 4, 7, 2.5, 15, 90],
-        [2, 5, 8, 12.5, 15, 90],
-        [0, 4, 8, 2.5, 15, 45],
-        [2, 4, 6, 2.5, 15, 135],
+        [0, 1, 2, 5, 16.67, 0, 90],
+        [3, 4, 5, 5, 50.00, 0, 90],
+        [6, 7, 8, 5, 83.33, 0, 90],
+        [0, 3, 6, 16.67, 5, 90, 90],
+        [1, 4, 7, 50.00, 5, 90, 90],
+        [2, 5, 8, 83.33, 5, 90, 90],
+        [0, 4, 8, 10, 10, 45, 113],
+        [2, 4, 6, 10, 90, -45, 113],
     ]
     let winDetected = false;
     
@@ -68,20 +112,16 @@ const checkWin = ()=>{
             document.querySelector('.imgbox').classList.add('active');
             
             // Play win audio
-            gameover.play();
+            if (gameover) {
+                gameover.play().catch(err => console.log("Audio play failed:", err));
+            }
             
             // Positioning responsive line
-            // Check screen width to determine line position scaling
             const line = document.querySelector(".line");
-            if (window.innerWidth > 800) {
-                // Desktop scale
-                line.style.transform = `translate(${e[3]}vw, ${e[4]}vw) rotate(${e[5]}deg)`;
-                line.style.width = "25vw";
-            } else {
-                // Mobile/Tablet scale (approximate positions in grid container)
-                // For mobile we rely heavily on winning cell highlights since layout is very dynamic
-                line.style.width = "0vw";
-            }
+            line.style.left = `${e[3]}%`;
+            line.style.top = `${e[4]}%`;
+            line.style.transform = `rotate(${e[5]}deg)`;
+            line.style.width = `${e[6]}%`;
         }
     });
 
@@ -98,7 +138,7 @@ const checkWin = ()=>{
             document.querySelector('.info').innerText = "Game Draw!"
             isgameover = true;
             // Clear line style just in case
-            document.querySelector(".line").style.width = "0vw";
+            document.querySelector(".line").style.width = "0%";
         }
     }
 }
@@ -118,7 +158,9 @@ Array.from(boxes).forEach(element =>{
             }
             
             turn = changeTurn();
-            audioTurn.play();
+            if (audioTurn) {
+                audioTurn.play().catch(err => console.log("Audio play failed:", err));
+            }
             checkWin();
             
             if (!isgameover){
@@ -139,7 +181,7 @@ resetBtn.addEventListener('click', ()=>{
     });
     turn = "X"; 
     isgameover = false
-    document.querySelector(".line").style.width = "0vw";
+    document.querySelector(".line").style.width = "0%";
     document.getElementsByClassName("info")[0].innerText  = "Turn for " + turn;
     document.querySelector('.imgbox').classList.remove('active');
 })
