@@ -1,3 +1,22 @@
+// Global error listener to help debug on-screen
+window.addEventListener('error', (event) => {
+    const errorDiv = document.createElement('div');
+    errorDiv.style.position = 'fixed';
+    errorDiv.style.top = '10px';
+    errorDiv.style.left = '10px';
+    errorDiv.style.right = '10px';
+    errorDiv.style.backgroundColor = 'rgba(239, 68, 68, 0.95)';
+    errorDiv.style.color = '#ffffff';
+    errorDiv.style.padding = '15px';
+    errorDiv.style.borderRadius = '8px';
+    errorDiv.style.zIndex = '9999';
+    errorDiv.style.fontFamily = 'monospace';
+    errorDiv.style.fontSize = '12px';
+    errorDiv.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
+    errorDiv.innerHTML = `<strong>JS Error:</strong> ${event.message} <br> <em>at ${event.filename}:${event.lineno}</em>`;
+    document.body.appendChild(errorDiv);
+});
+
 let userScore = 0;
 let compScore = 0;
 
